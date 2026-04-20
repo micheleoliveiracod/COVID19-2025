@@ -22,19 +22,16 @@ library(RSQLite)
 library(data.table)
 
 #Criei uma conexão com um banco SQLite (arquivo local):
-conexao <- dbConnect(SQLite(), dbname = "covid_2025.sqlite") #escolhi o nome do arquivo antes de executar (covid_2025.sqlite)
+conexao <- dbConnect(SQLite(), dbname = "covid_2025.sqlite") 
 
 #Ler o CSV e insira na tabela:
-dados <- fread("INFLUD25-15-12-2025.csv") #coloquei o nome arquivo CSV que vai ser convertido
-dbWriteTable(conexao, "dados_covid", dados) #escolhi o nome da tabela que vai ser criada (dados_covid)
+dados <- fread("INFLUD25-15-12-2025.csv")
+dbWriteTable(conexao, "dados_covid", dados) 
 
 #Encerre a conexão
 dbDisconnect(conexao)
 
-#Abri o arquivo no SQLlite
-#Fiz soma e contagem do numero de casos e agrupei.
-#Agrupei por municipio e ordenei por estado.
-
+#Query
 
 SELECT NU_NOTIFIC
        DT_NOTIFIC
@@ -78,9 +75,6 @@ FROM dados_covid
 GROUP BY ID_MUNICIP
 ORDER BY SG_UF
 
-
-#FIZ UMA SOMA DO TOTAL POR UF
-
 SELECT 
   UF,
   SUM(FEBRE) AS FEBRE,
@@ -113,8 +107,6 @@ SELECT
 FROM dados_covid
 GROUP BY UF
 ORDER BY UF, total_casos DESC
-
-#FILTREI SOMENTE SINTOMAS CLINICOS POR UF
 
 SELECT 
   UF,
