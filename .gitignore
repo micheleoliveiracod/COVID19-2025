@@ -1,1 +1,13 @@
+# R
 .RData
+.Rhistory
+.Rproj.user/
+*.Rproj
+
+# Dataset bruto original (muito grande para o repo)
+INFLUD25-15-12-2025.csv
+
+# Arquivos temporarios
+*.tmp
+*.bak
+~$*
