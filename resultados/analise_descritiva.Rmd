@@ -1,237 +1,347 @@
 ---
-title: "Analise_exploratoria"
-output: html_document
+title: "Analise Descritiva - COVID-19 (DATASUS 2025)"
+author: "Michele Oliveira"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
 ---
-Temos casos sem a indicação do sexo do paciente, tornando as analises por sexo inconclusivas.
-Cada linha representa um caso de covid.
-Todos os casos foram notificados em 2025.
 
-Dimensões do dataset
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(skimr)
+library(janitor)
+```
 
-linhas: 318735   
-Colunas: 35
+## Carregamento dos dados
 
->skim(data_set_analisado)
+```{r}
+data_set_analisado <- read_csv2("../data/data_set_analisado.csv")
+```
 
-── Data Summary ────────────────────────
-                           Values            
-Name                       data_set_analisado
-Number of rows             318735            
-Number of columns          35                
-_______________________                      
-Column type frequency:                       
-  character                5                 
-  numeric                  30                
-________________________                     
-Group variables            None              
+**Dimensoes do dataset:** `r nrow(data_set_analisado)` linhas x `r ncol(data_set_analisado)` colunas
 
-── Variable type: character ───────────────────────────────────────────────────────────────────────────
-  skim_variable n_missing complete_rate min max empty n_unique whitespace
-1 DT_NOTIFIC            0         1      10  10     0      347          0
-2 UF                  101         1.000   2   2     0       27          0
-3 MUNICIPIO             0         1       3  29     0     1682          0
-4 PAIS                  0         1       4  20     0       16          0
-5 SEXO                  0         1       1   1     0        3          0
+Cada linha representa um caso de COVID-19 notificado em 2025.
 
-── Variable type: numeric ─────────────────────────────────────────────────────────────────────────────
-   skim_variable n_missing complete_rate     mean      sd       p0     p25     p50     p75    p100
- 1 NU_NOTIFIC            0             1 3.18e+13 7.13e+9  3.17e13 3.17e13 3.18e13 3.18e13 3.18e13
- 2 IDADE                 0             1 2.98e+ 1 3.24e+1 -1   e 0 3   e 0 9   e 0 6.3 e 1 1.41e 2
- 3 FEBRE                 0             1 6.15e- 1 4.87e-1  0       0       1   e 0 1   e 0 1   e 0
- 4 TOSSE                 0             1 8.04e- 1 3.97e-1  0       1   e 0 1   e 0 1   e 0 1   e 0
- 5 GARGANTA              0             1 1.11e- 1 3.14e-1  0       0       0       0       1   e 0
- 6 RESPIRATORIO          0             1 6.89e- 1 4.63e-1  0       0       1   e 0 1   e 0 1   e 0
- 7 SATURACAO             0             1 5.37e- 1 4.99e-1  0       0       1   e 0 1   e 0 1   e 0
- 8 DIARREIA              0             1 7.89e- 2 2.70e-1  0       0       0       0       1   e 0
- 9 VOMITO                0             1 1.16e- 1 3.20e-1  0       0       0       0       1   e 0
-10 FATOR_RISC            0             1 4.19e- 1 4.93e-1  0       0       0       1   e 0 1   e 0
-11 CARDIOPATICO          0             1 1.49e- 1 3.56e-1  0       0       0       0       1   e 0
-12 HEMATOLOGICO          0             1 8.97e- 3 9.43e-2  0       0       0       0       1   e 0
-13 DOWN                  0             1 7.37e- 3 8.55e-2  0       0       0       0       1   e 0
-14 HEPATICA              0             1 5.22e- 3 7.21e-2  0       0       0       0       1   e 0
-15 ASMA                  0             1 6.91e- 2 2.54e-1  0       0       0       0       1   e 0
-16 DIABETES              0             1 9.25e- 2 2.90e-1  0       0       0       0       1   e 0
-17 NEUROLOGICO           0             1 4.26e- 2 2.02e-1  0       0       0       0       1   e 0
-18 PNEUMOPATICO          0             1 5.20e- 2 2.22e-1  0       0       0       0       1   e 0
-19 IMUNODEPRE            0             1 2.40e- 2 1.53e-1  0       0       0       0       1   e 0
-20 RENAL                 0             1 2.32e- 2 1.50e-1  0       0       0       0       1   e 0
-21 OBESIDADE             0             1 2.16e- 2 1.45e-1  0       0       0       0       1   e 0
-22 DOR_ABD               0             1 5.54e- 2 2.29e-1  0       0       0       0       1   e 0
-23 FADIGA                0             1 1.79e- 1 3.83e-1  0       0       0       0       1   e 0
-24 PERD_OLFT             0             1 1.26e- 2 1.12e-1  0       0       0       0       1   e 0
-25 PERD_PALA             0             1 1.31e- 2 1.14e-1  0       0       0       0       1   e 0
-26 VACINA                0             1 2.61e- 1 4.39e-1  0       0       0       1   e 0 1   e 0
-27 UTI                   0             1 2.60e- 1 4.39e-1  0       0       0       1   e 0 1   e 0
-28 RAIOX_RES             0             1 1.43e- 1 3.50e-1  0       0       0       0       1   e 0
-29 TOMO_RES              0             1 1.46e- 2 1.20e-1  0       0       0       0       1   e 0
-30 AMOSTRA               0             1 9.23e- 1 2.67e-1  0       1   e 0 1   e 0 1   e 0 1   e 0
+```{r}
+skim(data_set_analisado)
+```
 
-=== Total por sexo ===
-SEXO  frequencia
-  <chr>      <int>
-1 F         154.193
-2 I             44
-3 M         164.498
+## Funcao auxiliar
 
-=== Tabela de vacinação (coluna VACINA) ===
+```{r}
+criar_faixa_etaria <- function(idade) {
+  cut(
+    as.numeric(idade),
+    breaks = c(0, 1, 5, 10, 17, 29, 39, 49, 59, 69, 79, Inf),
+    labels = c("0-1", "2-5", "6-10", "11-17", "18-29", "30-39",
+               "40-49", "50-59", "60-69", "70-79", "80+"),
+    right = TRUE, include.lowest = TRUE
+  )
+}
+```
 
-Vacinados e não vacinados
-  vac_status        n  perc
-  <chr>         <int> <dbl>
-1 Não vacinado 235.426 0.739
-2 Vacinado      83.309 0.261
+## Distribuicao por sexo
 
+Existem `r sum(data_set_analisado$SEXO == "I")` pacientes sem classificacao de sexo.
 
-=== Top 5 comorbidades por sexo ===
+```{r}
+freq_sexo <- data_set_analisado |>
+  count(SEXO, name = "frequencia")
 
-SEXO  comorbidade    n_sim
-   <chr> <chr>        <int>
- 1 F     CARDIOPATICO 26480
- 2 F     DIABETES     16963
- 3 F     ASMA         11832
- 4 F     PNEUMOPATICO  8846
- 5 F     NEUROLOGICO   6615
- 6 I     ASMA             2
- 7 I     CARDIOPATICO     1
- 8 I     IMUNODEPRE       1
- 9 I     NEUROLOGICO      1
-10 I     OBESIDADE        1
-11 M     CARDIOPATICO 21125
-12 M     DIABETES     12531
-13 M     ASMA         10189
-14 M     PNEUMOPATICO  7736
-15 M     NEUROLOGICO   6949
+freq_sexo
 
-=== Top 5 sintoma por sexo ===
+ggplot(freq_sexo, aes(x = SEXO, y = frequencia, fill = SEXO)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Sexo", y = "Frequencia",
+       title = "Frequencia de casos por sexo") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
 
-SEXO  sintoma       n_sim total_sexo   perc
-   <chr> <chr>         <int>      <int>  <dbl>
- 1 F     TOSSE        123517     495371 0.249 
- 2 F     RESPIRATORIO 104813     495371 0.212 
- 3 F     FEBRE         92314     495371 0.186 
- 4 F     SATURACAO     83503     495371 0.169 
- 5 F     FADIGA        28674     495371 0.0579
- 6 I     TOSSE            36        139 0.259 
- 7 I     RESPIRATORIO     34        139 0.245 
- 8 I     FEBRE            29        139 0.209 
- 9 I     SATURACAO        21        139 0.151 
-10 I     GARGANTA          6        139 0.0432
-11 M     TOSSE        132843     528052 0.252 
-12 M     RESPIRATORIO 114611     528052 0.217 
-13 M     FEBRE        103773     528052 0.197 
-14 M     SATURACAO     87539     528052 0.166 
-15 M     FADIGA        28399     528052 0.0538
+## Comorbidades
 
-=== Total de casos por faixa etária ===
+```{r}
+comorb_cols <- c("CARDIOPATICO", "HEMATOLOGICO", "DOWN", "HEPATICA", "ASMA",
+                 "DIABETES", "NEUROLOGICO", "PNEUMOPATICO", "IMUNODEPRE",
+                 "RENAL", "OBESIDADE")
 
-faixa_etaria total_casos
-   <fct>              <int>
- 1 0-1                42944
- 2 2-5                76814
- 3 6-10               48724
- 4 11-17              14297
- 5 18-29               9786
- 6 30-39               9241
- 7 40-49              11688
- 8 50-59              15381
- 9 60-69              24081
-10 70-79              29387
-11 80+                34531
+freq_comorb <- data_set_analisado |>
+  select(all_of(comorb_cols)) |>
+  pivot_longer(everything(), names_to = "comorbidade", values_to = "presenca") |>
+  filter(presenca == 1) |>
+  count(comorbidade, name = "frequencia")
 
-=== Total geral de casos por faixa etária e status vacinal ===
+ggplot(freq_comorb, aes(x = reorder(comorbidade, -frequencia), y = frequencia)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(x = "Comorbidade", y = "Frequencia",
+       title = "Frequencia de comorbidades em casos de COVID-19") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
 
-faixa_etaria status_vacinal total_casos
-   <fct>        <fct>                <int>
- 1 0-1          Não vacinado         31.707
- 2 0-1          Vacinado             11.237
- 3 2-5          Não vacinado         63.456
- 4 2-5          Vacinado             13.358
- 5 6-10         Não vacinado         37.081
- 6 6-10         Vacinado             11.643
- 7 11-17        Não vacinado         11.093
- 8 11-17        Vacinado              3.204
- 9 18-29        Não vacinado          7.927
-10 18-29        Vacinado              1.859
-11 30-39        Não vacinado          7.440
-12 30-39        Vacinado              1.801
-13 40-49        Não vacinado          9.484
-14 40-49        Vacinado              2.204
-15 50-59        Não vacinado         11.942
-16 50-59        Vacinado              3.439
-17 60-69        Não vacinado         16.108
-18 60-69        Vacinado              7.973
-19 70-79        Não vacinado         17.904
-20 70-79        Vacinado             11.483
-21 80+          Não vacinado         20.030
-22 80+          Vacinado             14.501
+### Top 5 comorbidades por sexo
 
+```{r}
+tab_comorb_sexo <- data_set_analisado |>
+  select(SEXO, all_of(comorb_cols)) |>
+  pivot_longer(cols = all_of(comorb_cols),
+               names_to = "comorbidade", values_to = "valor") |>
+  group_by(SEXO, comorbidade) |>
+  summarise(n_sim = sum(valor == 1, na.rm = TRUE), .groups = "drop")
 
-Total de casos: 318735 
-Casos em UTI: 83005 
-Percentual em UTI: 26.04 %
+top5_comorb_sexo <- tab_comorb_sexo |>
+  group_by(SEXO) |>
+  slice_max(order_by = n_sim, n = 5, with_ties = FALSE) |>
+  ungroup()
 
-=== Frequencia UTI por faica etaria ===
-faixa_etaria n_uti perc_uti
-   <fct>        <int>    <dbl>
- 1 2-5          18212 21.9    
- 2 0-1          11351 13.7    
- 3 6-10         10833 13.1    
- 4 70-79         8701 10.5    
- 5 80+           8654 10.4    
- 6 60-69         7513  9.05   
- 7 50-59         4801  5.78   
- 8 11-17         3894  4.69   
- 9 40-49         3656  4.40   
-10 18-29         2715  3.27   
-11 30-39         2674  3.22   
-12 NA               1  0.00120
+top5_comorb_sexo
 
+ggplot(top5_comorb_sexo, aes(x = comorbidade, y = n_sim, fill = SEXO)) +
+  geom_col(position = position_dodge(width = 0.8)) +
+  geom_text(aes(label = n_sim),
+            position = position_dodge(width = 0.8),
+            vjust = -0.3, size = 3.5) +
+  labs(title = "Top 5 comorbidades por sexo",
+       x = "Comorbidade", y = "Numero de casos") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.title = element_blank())
+```
 
-=== Taxa de UTI (gravidade) por status vacinal ===
-vac_status   n_casos n_uti taxa_uti
-  <chr>       <int> <int>    <dbl>
-Não vacinado  235.426 63107    0.268
-Vacinado       83.309 19898    0.239
+## Sintomas
 
+```{r}
+sint_cols <- c("FEBRE", "TOSSE", "GARGANTA", "RESPIRATORIO", "SATURACAO",
+               "DIARREIA", "VOMITO", "DOR_ABD", "FADIGA",
+               "PERD_OLFT", "PERD_PALA")
 
-=== Tabela de casos UTI por faixa etária NÃO VACINADOS ===
+freq_sint <- data_set_analisado |>
+  select(all_of(sint_cols)) |>
+  pivot_longer(everything(), names_to = "sintoma", values_to = "presenca") |>
+  filter(presenca == 1) |>
+  count(sintoma, name = "frequencia")
 
-   faixa_etaria n_casos_n_vac
-   <fct>                <int>
- 1 2-5                  15665
- 2 0-1                   9014
- 3 6-10                  8439
- 4 70-79                 5349
- 5 80+                   5208
- 6 60-69                 5145
- 7 50-59                 3796
- 8 11-17                 3057
- 9 40-49                 2970
-10 18-29                 2267
-11 30-39                 2196
-12 NA                       1
+ggplot(freq_sint, aes(x = reorder(sintoma, -frequencia), y = frequencia)) +
+  geom_bar(stat = "identity", fill = "tomato") +
+  labs(x = "Sintoma", y = "Frequencia",
+       title = "Frequencia de sintomas em casos de COVID-19") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
 
-=== Tabela de casos UTI por faixa etária VACINADOS ===
+### Top 5 sintomas por sexo
 
-   faixa_etaria n_casos_vac
-   <fct>              <int>
- 1 80+                 3446
- 2 70-79               3352
- 3 2-5                 2547
- 4 6-10                2394
- 5 60-69               2368
- 6 0-1                 2337
- 7 50-59               1005
- 8 11-17                837
- 9 40-49                686
-10 30-39                478
-11 18-29                448
+```{r}
+tab_sint_sexo <- data_set_analisado |>
+  select(SEXO, all_of(sint_cols)) |>
+  pivot_longer(cols = all_of(sint_cols),
+               names_to = "sintoma", values_to = "valor") |>
+  mutate(valor = as.numeric(valor)) |>
+  group_by(SEXO, sintoma) |>
+  summarise(n_sim = sum(valor == 1, na.rm = TRUE), .groups = "drop") |>
+  group_by(SEXO) |>
+  mutate(total_sexo = sum(n_sim),
+         perc = ifelse(total_sexo > 0, n_sim / total_sexo, NA_real_)) |>
+  ungroup() |>
+  arrange(SEXO, desc(n_sim))
 
-=== Tabela numero total de exames ===
+top5_sint_sexo <- tab_sint_sexo |>
+  group_by(SEXO) |>
+  slice_max(order_by = n_sim, n = 5, with_ties = FALSE) |>
+  ungroup()
 
-  categoria   total percentual
-  <chr>       <int>      <dbl>
-1 Raio-X      45674      14.3 
-2 Tomografia   4642       1.46
-3 Sem exame  268419      84.2 
-4 Total      318735     100   
+top5_sint_sexo
+
+ggplot(top5_sint_sexo, aes(x = sintoma, y = n_sim, fill = SEXO)) +
+  geom_col(position = "dodge") +
+  labs(title = "Top 5 sintomas por sexo",
+       x = "Sintoma", y = "Numero de casos") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Status vacinal
+
+```{r}
+db_vac <- data_set_analisado |>
+  mutate(vac_status = ifelse(is.na(VACINA) | VACINA == "" | VACINA == "0",
+                             "Nao vacinado", "Vacinado"))
+
+tab_vac <- db_vac |>
+  count(vac_status) |>
+  mutate(perc = n / sum(n))
+
+tab_vac
+
+ggplot(tab_vac, aes(x = vac_status, y = n, fill = vac_status)) +
+  geom_col() +
+  labs(title = "Casos por status vacinal",
+       x = "Status vacinal", y = "Numero de casos") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+## Casos por faixa etaria
+
+```{r}
+total_casos_faixa <- data_set_analisado |>
+  mutate(
+    faixa_etaria = criar_faixa_etaria(IDADE),
+    status_vacinal = factor(
+      case_when(
+        VACINA == 1 ~ "Vacinado",
+        VACINA == 0 ~ "Nao vacinado",
+        TRUE ~ "Ignorado"
+      ),
+      levels = c("Nao vacinado", "Vacinado", "Ignorado")
+    )
+  )
+
+tabela_faixa_total <- total_casos_faixa |>
+  filter(!is.na(faixa_etaria)) |>
+  count(faixa_etaria, name = "total_casos")
+
+tabela_faixa_total
+
+ggplot(tabela_faixa_total, aes(x = faixa_etaria, y = total_casos)) +
+  geom_col(fill = "#2C6BB0") +
+  labs(title = "Total de casos por faixa etaria",
+       x = "Faixa etaria", y = "Numero de casos") +
+  theme_minimal()
+```
+
+### Por faixa etaria e status vacinal
+
+```{r}
+tabela_faixa_status_vac <- total_casos_faixa |>
+  filter(!is.na(faixa_etaria)) |>
+  count(faixa_etaria, status_vacinal, name = "total_casos")
+
+ggplot(tabela_faixa_status_vac,
+       aes(x = faixa_etaria, y = total_casos, fill = status_vacinal)) +
+  geom_col(position = "dodge") +
+  labs(title = "Total de casos por faixa etaria e status vacinal",
+       x = "Faixa etaria", y = "Numero de casos", fill = "Status vacinal") +
+  theme_minimal()
+```
+
+## Internacao em UTI
+
+```{r}
+db_tot <- data_set_analisado |>
+  mutate(across(c(VACINA, UTI, RAIOX_RES, TOMO_RES), as.numeric))
+
+n_total <- nrow(db_tot)
+n_uti <- sum(db_tot$UTI == 1, na.rm = TRUE)
+perc_uti <- round((n_uti / n_total) * 100, 2)
+```
+
+- **Total de casos:** `r format(n_total, big.mark = ".")`
+- **Casos em UTI:** `r format(n_uti, big.mark = ".")`
+- **Percentual em UTI:** `r perc_uti`%
+
+### UTI por status vacinal
+
+```{r}
+tab_uti_vac <- data_set_analisado |>
+  mutate(vac_status = ifelse(VACINA == 1, "Vacinado", "Nao vacinado")) |>
+  group_by(vac_status) |>
+  summarise(n_casos = n(),
+            n_uti = sum(UTI == 1, na.rm = TRUE),
+            taxa_uti = n_uti / n_casos,
+            .groups = "drop")
+
+tab_uti_vac
+
+ggplot(tab_uti_vac, aes(x = vac_status, y = taxa_uti, fill = vac_status)) +
+  geom_col() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Taxa de UTI por status vacinal",
+       x = "Status vacinal", y = "Proporcao de casos em UTI") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+### UTI por faixa etaria
+
+```{r}
+dados_com_faixa <- data_set_analisado |>
+  mutate(faixa_etaria = criar_faixa_etaria(IDADE))
+
+freq_uti_faixa <- dados_com_faixa |>
+  filter(UTI == 1) |>
+  count(faixa_etaria, name = "n_uti") |>
+  mutate(perc_uti = 100 * n_uti / sum(n_uti)) |>
+  arrange(desc(n_uti))
+
+freq_uti_faixa
+
+ggplot(freq_uti_faixa, aes(x = faixa_etaria, y = n_uti)) +
+  geom_col(fill = "#2E86C1") +
+  geom_text(aes(label = n_uti), vjust = -0.3, size = 3.5) +
+  labs(title = "Casos de internacao em UTI por faixa etaria",
+       x = "Faixa etaria", y = "Numero de casos em UTI") +
+  theme_minimal()
+```
+
+### UTI nao vacinados por faixa etaria
+
+```{r}
+tabela_faixa_n_vac <- dados_com_faixa |>
+  filter(UTI == 1, VACINA == 0) |>
+  count(faixa_etaria, name = "n_casos") |>
+  arrange(desc(n_casos))
+
+tabela_faixa_n_vac
+
+ggplot(tabela_faixa_n_vac, aes(x = faixa_etaria, y = n_casos)) +
+  geom_col(fill = "#1f77b4") +
+  labs(title = "Internados em UTI nao vacinados por faixa etaria",
+       x = "Faixa etaria", y = "Numero de casos") +
+  theme_minimal()
+```
+
+### UTI vacinados por faixa etaria
+
+```{r}
+tabela_faixa_vac <- dados_com_faixa |>
+  filter(UTI == 1, VACINA == 1) |>
+  count(faixa_etaria, name = "n_casos") |>
+  arrange(desc(n_casos))
+
+tabela_faixa_vac
+
+ggplot(tabela_faixa_vac, aes(x = faixa_etaria, y = n_casos)) +
+  geom_col(fill = "#1f77b4") +
+  labs(title = "Internados em UTI vacinados por faixa etaria",
+       x = "Faixa etaria", y = "Numero de casos") +
+  theme_minimal()
+```
+
+## Exames de imagem
+
+```{r}
+n_raiox <- sum(db_tot$RAIOX_RES == 1, na.rm = TRUE)
+n_tomo <- sum(db_tot$TOMO_RES == 1, na.rm = TRUE)
+n_sem <- n_total - n_raiox - n_tomo
+
+df_exames <- tibble(
+  categoria = c("Raio-X", "Tomografia", "Sem exame"),
+  total = c(n_raiox, n_tomo, n_sem),
+  percentual = 100 * total / n_total
+)
+
+df_exames
+
+ggplot(df_exames, aes(x = categoria, y = total, fill = categoria)) +
+  geom_col() +
+  geom_text(aes(label = format(total, big.mark = ".", decimal.mark = ",")),
+            vjust = -0.3, size = 4) +
+  labs(title = "Casos por realizacao de exames de imagem",
+       x = "Categoria", y = "Numero de casos") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
