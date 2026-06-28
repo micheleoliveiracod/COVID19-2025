@@ -1,87 +1,126 @@
-# 🦠 Análise de Casos de COVID-19 (DATASUS) 2025
+# Analise de Casos de COVID-19 (DATASUS) 2025
 
-Este repositório documenta a minha análise sobre o dataset de casos de COVID19, disponibilizados pelo DATASUS.
-<br/>
-<br/>
+Analise descritiva e diagnostica sobre o dataset de casos de COVID-19 no Brasil, disponibilizado pelo DATASUS (SIVEP-Gripe), com ~318 mil registros de 2025.
 
-## 📋 Visão Geral
+## Objetivo
 
-Identificar padrões criticos sobre o total de casos de COVID-19 no Brasil, por estado, faixa etária, comorbidades, taxa de internação na UTI e taxa de vacinação.
-<br/>
-<br/>
+Identificar padroes criticos sobre o total de casos de COVID-19 no Brasil, por estado, faixa etaria, comorbidades, taxa de internacao na UTI e taxa de vacinacao.
 
-## 📍 Escopo:
+## Questoes respondidas
 
-Análise descritiva e diagnóstica.
-<br/>
-<br/>
+- Quais comorbidades foram mais frequentes?
+- Quais sintomas foram mais frequentes?
+- Quantos casos vacinados em relacao ao total?
+- Quais comorbidades e sintomas sao mais frequentes por sexo?
+- Quantos casos de internacao em UTI em relacao ao total?
+- Qual a taxa de gravidade (UTI) entre vacinados e nao vacinados?
+- Em quantos casos fizeram raio-X e tomografia em relacao ao total?
 
-## 📍 Algumas questões respondidas:
+## Estrutura do repositorio
 
-Quais comorbidades foram mais frequentes?
+```
+COVID19-2025/
+├── data/                          # Dataset para analise
+│   └── data_set_analisado.csv
+├── scripts/                       # Codigos R e SQL
+│   ├── 01_etl.R                   # Extracao e transformacao dos dados
+│   ├── 02_analise.R               # Script principal de analise
+│   └── etl_sql_referencia.sql     # Queries SQL de referencia
+├── resultados/                    # Resultados e relatorios
+│   ├── analise_descritiva.Rmd     # Relatorio reprodutivel (R Markdown)
+│   └── graficos/                  # Graficos gerados
+├── docs/                          # Documentacao
+│   ├── fonte_dos_dados.md         # Fonte e processo de ETL
+│   └── conclusao.md               # Conclusoes da analise
+├── README.md
+└── LICENSE
+```
 
-Quais sintomas foram mais frequentes?
+## Tecnologias
 
-Quantos casos vacinados em relação ao total?
+- **R** (tidyverse, ggplot2, skimr, janitor)
+- **SQL** (SQLite)
+- **Excel / Power Query** (recodificacao de variaveis)
 
-Quais comorbidades são mais frequentes por sexo?
+## Dados
 
-Quais sintomas são mais frequentes por sexo?
+- **Fonte:** [DATASUS - SRAG 2021-2022](https://dados.gov.br/dados/conjuntos-dados/srag-2021-e-2022)
+- **Dataset bruto:** INFLUD25-15-12-2025.csv (~398 mil linhas)
+- **Dataset final:** 318.735 linhas x 35 colunas (apos ETL)
+- **Detalhes do ETL:** [docs/fonte_dos_dados.md](docs/fonte_dos_dados.md)
+- [Datasets do projeto no Google Drive](https://drive.google.com/drive/u/2/folders/19_gSEzlOwNPJJ_BaG6RUaiWtrmzmPxMO)
 
-Quantos casos de internação em UTI em relação ao total de casos?
+## Como reproduzir
 
-Qual a taxa de gravidade UTI entre vacinados e não vacinados?
+1. Clone o repositorio
+2. Instale os pacotes R necessarios:
+   ```r
+   install.packages(c("tidyverse", "skimr", "janitor"))
+   ```
+3. Execute os scripts na ordem:
+   - `scripts/01_etl.R` — ETL (requer o dataset bruto do DATASUS)
+   - `scripts/02_analise.R` — Analises e geracao de graficos
+4. Ou abra `resultados/analise_descritiva.Rmd` no RStudio e clique em **Knit** para gerar o relatorio HTML
 
-Em quantos casos fizeram raio-x e tomografia em relação ao total?
-<br/>
-<br/>
+## Principais resultados
 
-## 🗂️ Resultados das analises
+### Distribuicao por sexo
+![Frequencia de casos por sexo](resultados/graficos/freq_casos_por_sexo.png)
 
-- Analise descritiva com valores totais, médias e percentuais.
+### Comorbidades mais frequentes
+![Frequencia de comorbidades](resultados/graficos/freq_comorbidades_total.png)
 
-- Grafico - Frequencia de casos por sexo.
+### Top 5 comorbidades por sexo
+![Top 5 comorbidades por sexo](resultados/graficos/top5_comorbidades_por_sexo.png)
 
-- Grafico - Frequencia de comorbidades pelo total de casos.
+### Sintomas mais frequentes
+![Frequencia de sintomas](resultados/graficos/freq_sintomas_total.png)
 
-- Grafico - Top 5 comorbidades por sexo.
+### Top 5 sintomas por sexo
+![Top 5 sintomas por sexo](resultados/graficos/top5_sintomas_por_sexo.png)
 
-- Grafico - Frequencia de sintomas pelo total de casos.
+### Status vacinal
+![Casos por status vacinal](resultados/graficos/total_casos_status_vacinal.png)
 
-- Grafico - Numero de casos com sintoma por sexo.
+### Total de casos por faixa etaria
+![Total de casos por faixa etaria](resultados/graficos/total_casos_faixa_etaria.png)
 
-- Grafico - Top 5 sintomas por sexo.
+### Casos por faixa etaria e status vacinal
+![Faixa etaria e status vacinal](resultados/graficos/total_casos_faixa_etaria_vacinal.png)
 
-- Grafico - Total de casos por status vacinal.
+### Taxa de UTI por status vacinal
+![Taxa de UTI por status vacinal](resultados/graficos/taxa_uti_status_vacinal.png)
 
-- Grafico - Numero de internados UTI por status vacinal.
+### Internacao em UTI por faixa etaria
+![UTI por faixa etaria](resultados/graficos/total_uti_faixa_etaria.png)
 
-- Grafico - Percentual de internação em UTI por faixa etária.
+### Percentual de internacoes em UTI por faixa etaria
+![Percentual UTI por faixa etaria](resultados/graficos/percentual_uti_faixa_etaria.png)
 
-- Grafico - Total de casos por fixa etária.
+### UTI nao vacinados por faixa etaria
+![UTI nao vacinados](resultados/graficos/uti_nao_vacinados_faixa_etaria.png)
 
-- Grafico - Total de casos por faixa etária e status vacinal.
+### UTI vacinados por faixa etaria
+![UTI vacinados](resultados/graficos/uti_vacinados_faixa_etaria.png)
 
-- Grafico - Numero de internados na UTI por faixa etária.
+### Exames de imagem
+![Exames de imagem](resultados/graficos/casos_raiox_tomografia_vs_total.png)
 
-- Grafico - Numero de internados na UTI e não vacinados por faixa etária.
+### Percentual por situacao de exame
+![Percentual de exames](resultados/graficos/percentual_exame_realizado.png)
 
-- Grafico - Numero de internados na UTI e vacinados por faixa etária.
+## Conclusao
 
-- Grafico - Numero de exames de raiox e tomografia em relação ao total.
+Leia a conclusao completa em [docs/conclusao.md](docs/conclusao.md).
 
-- Grafico - Percentual de casos por situação de exame realizado.
+## Instrucoes de uso
 
-- Conclusão - Respostas para as perguntas e uma breve discussão dos resultados.
+*Este projeto tem objetivos academicos, exclusivamente.*
 
-- [Dataset's do projeto no Google Drive](https://drive.google.com/drive/u/2/folders/19_gSEzlOwNPJJ_BaG6RUaiWtrmzmPxMO)
-<br/>
+**Permitido:** Observar o trabalho e usar como referencia para replicar o metodo.
 
-## 📃 Instruções de uso
+**Proibido:** Utilizar as analises e conclusoes para fazer declaracoes, citacoes e afirmacoes de qualquer natureza.
 
-*Este projeto tem objetivos acadêmicos, exclusivamente.*
+## Licenca
 
-✅ Permitido: Observar o trabalho e usar como referêcia para replicar o método.
-
-❌ Proibido: Utilizar minhas análises e conclusão para fazer declarações, citações e afirmações de qualquer natureza.
-
+Este projeto esta licenciado sob a [MIT License](LICENSE) - Copyright (c) 2026 Michele Oliveira.
